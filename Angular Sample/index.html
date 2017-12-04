@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html ng-app="angularjs-starter">
+
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script src="script.js"></script>
+  </head>
+
+  <body  ng-controller="main" >
+    <h1>Search User Skills</h1>
+    
+    
+      <div class="border">
+        <span>User 1 Skills:</span>
+        <p>
+            <span ng-repeat="skill in skillsArray1 | limitTo:5">{{skill}}{{$last?'':', '}}</span>
+            <a href="javascript:;" ng-if="skillsArray1.length>5" ng-click="toggle($event)" click-offin="">(+{{skillsArray1.length-5}} more)</a>
+        </p>
+        <ul class="searching hide">
+            <span ng-repeat="skill in skillsArray1">
+                <li ng-if="$index>4">{{skill}}</li>
+            </span>
+        </ul>
+      </div>
+      
+      
+     <div class="border" >
+        <span>User 2 Skills:</span>  
+        <p>
+          <span ng-repeat="skill in skillsArray2 | limitTo:5">{{skill}}{{$last?'':' , '}}</span>
+          <a  href="javascript:;" ng-if="skillsArray2.length>5" ng-click="toggle($event)" click-offin="">(+{{skillsArray2.length-5}} more)</a>
+        </p>
+        <ul class="searching hide">
+          <span ng-repeat="skill in skillsArray2">
+             <li ng-if="$index>4">{{skill}}</li> 
+          </span>
+        </ul>
+     </div>
+     
+     
+      <div class="border">
+          <span>User 3 Skills:</span>
+          <p>
+              <span ng-repeat="skill in skillsArray3 | limitTo:5">{{skill}}{{$last?'':', '}}</span>
+              <a href="javascript:;" ng-if="skillsArray3.length>5" ng-click="toggle($event)" click-offin="">(+{{skillsArray3.length-5}} more)</a>
+          </p>
+          
+          <ul class="searching hide ">
+              <span ng-repeat="skill in skillsArray3">
+                  <li ng-if="$index>4">{{skill}}</li>
+              </span>
+          </ul>
+      </div>
+          
+
+  </body>
+
+</html>

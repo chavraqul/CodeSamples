@@ -1,0 +1,57 @@
+﻿@model ReleaseMgmtWeb.Models.Application
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<div class="padding-content">
+    <h2>Details</h2>
+    <h4>Application</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.EPRId):
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EPRId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ApplicationName):
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ApplicationName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ApplicationAlias):
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ApplicationAlias)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.UpdatedBy):
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Users1.UserFullName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UpdatedDate):
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UpdatedDate)
+        </dd>
+    </dl>
+    <p>
+        @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+        <a class="link-go-back" href="javascript:void(0);" >Go Back</a>
+    </p>
+</div>
+
+

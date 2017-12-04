@@ -1,0 +1,41 @@
+/* Styles go here */
+html{
+  background-color: white;
+}
+body{
+  border: 2px solid brown;
+  padding: 0 20px;
+  height: 800px;
+  background-color: #ffffe6;
+  margin: 10px;
+}
+h1{
+  color: Blue;
+  text-align:center;
+}
+.border{
+  background-color: white;
+  height: 100px;
+  border: 2px solid red;
+  color: red;
+  margin: 20px 0; 
+  padding: 5px;
+}
+.searching{
+  background-color: white;
+  width: 130px; 
+  border: 1px solid #2a84e2; 
+  color: #989898; 
+  background: white; 
+  border-radius: 5px 0 0 5px; 
+  overflow-y: auto; 
+  height: 60px; 
+  padding: 4px;
+  position:relative; 
+  top: -15px; 
+  left:200px;
+  z-index:100; 
+}
+.hide{
+  display: none;
+}
