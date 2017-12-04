@@ -1,0 +1,345 @@
+<apex:page standardStylesheets="false" sidebar="false" showHeader="false"  docType="html-5.0">
+
+  <div class="contents publisher-dashboard-contents">
+    <div class="contents stories-contents member-stories-contents" ng-show="isInitialized" ng-cloak="true">
+      <div class="bg-border3"></div>
+      <div class="tabs-bar boxs">
+        <nav class="pull-left">
+          <ul>
+            <li class="{{vm.activeStories.isActive?'current':''}}"><span></span><a href="javascript:;" ng-click="vm.showTab(1)"><i></i>My Active Stories</a></li>
+            <li class="{{vm.completedStories.isActive?'current':''}}"><span></span><a href="javascript:;" ng-click="vm.showTab(2)"><i></i>My Non-Active Stories</a></li>
+          </ul>
+        </nav>
+        <div class="pull-right right-box">
+          <a href="javascript:;" class="filter-btn show-filter" ng-if="vm.filter.isActive" ng-click="vm.filter.isActive = false" ><i></i><span></span><em>Hide Filter</em></a>
+          <a href="javascript:;" class="filter-btn hide-filter" ng-if="!vm.filter.isActive" ng-click="vm.filter.isActive = true"><i></i><span></span><em>Filter</em></a>
+          <a href="#/publisherCreateStory" class="blue-btn radius6" ng-if="user.role == 'Publisher'"><span><span>Create Story</span></span></a>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+      <!-- end .tabs-bar -->
+
+      <div class="filter-content boxs" ng-if="vm.filter.isActive">
+        <div class="row">
+          <div class="group width572">
+            <span class="texts width95">Story Title:</span>
+            <span class="input-box width410"><input type="text" placeholder="Story"
+                ng-model="$root.$storage.publisherDashboard.storyTitle"
+                ng-change="vm.filter.storyTitle = $root.$storage.publisherDashboard.storyTitle"
+                ng-value="$root.$storage.publisherDashboard.storyTitle"/>
+            </span>
+          </div>
+          <!-- end .group -->
+          <div class="group">
+            <span class="texts width115">Service Offering:</span>
+            <span class="form-container width315 pull-right z-index1100" ng-jqtransform="a">
+              <span class="selects-container">
+                <select ng-model="$root.$storage.publisherDashboard.serviceOffering"
+                        ng-change="vm.filter.serviceOffering = $root.$storage.publisherDashboard.serviceOffering"
+                        ng-value="$root.$storage.publisherDashboard.serviceOffering">
+                  <option value="all" ng-selected="vm.filter.serviceOffering == 'all'">All</option>
+                  <option value="Analytics and Data Management Services">Analytics and Data Management Services</option>
+                  <option value="Applications Services">Applications Services</option>
+                  <option value="Business Process Services">Business Process Services</option>
+                  <option value="Data Center,Workload and Cloud Services">Data Center, Workload and Cloud Services</option>
+                  <option value="Enterprise Security Services">Enterprise Security Services</option>
+                  <option value="Industry Solutions">Industry Solutions</option>
+                  <option value="Mobility and Workplace Services">Mobility and Workplace Services</option>
+                </select>
+              </span>
+            </span>
+          </div>
+          <!-- end .group -->
+        </div>
+        <!-- end .row -->
+        <div class="row">
+          <div class="group width572">
+            <span class="texts width95">Activity Title:</span>
+            <span class="input-box width410"><input type="text" placeholder="Activity"
+                ng-model="$root.$storage.publisherDashboard.activityTitle"
+                ng-change="vm.filter.activityTitle = $root.$storage.publisherDashboard.activityTitle"
+                ng-value="$root.$storage.publisherDashboard.activityTitle"/>
+            </span>
+          </div>
+          <!-- end .group -->
+          <div class="group">
+            <span class="texts width115 pull-left">Activity Phase:</span>
+            <span class="form-container width315 pull-right" ng-jqtransform="a">
+              <span class="selects-container">
+                <select ng-model="$root.$storage.publisherDashboard.activityPhase"
+                        ng-change="vm.filter.activityPhase = $root.$storage.publisherDashboard.activityPhase"
+                        ng-value="$root.$storage.publisherDashboard.activityPhase">
+                  <option value="all" ng-selected="vm.filter.activityPhase == 'all'">All</option>
+                  <option value="Public">Public</option>
+                  <option value="In Registration">In Registration</option>
+                  <option value="In Assignment">In Assignment</option>
+                  <option value="In Submission">In Submission</option>
+                  <option value="In Review">In Review</option>
+                  <option value="Accepted">Accepted</option>
+                  <option value="Completed">Completed</option>
+                  <option value="Canceled">Canceled</option>
+                </select>
+              </span>
+            </span>
+          </div>
+          <!-- end .group -->
+        </div>
+        <!-- end .row -->
+        <div class="btn-box">
+          <a href="javascript:;" class="blue-border-btn width135 pull-right" ng-click="vm.filterStories()">FILTER</a>
+          <a href="javascript:;" class="blue-link filter-cancel-button pull-right" ng-click="vm.resetFilter(); clearFilter()">Clear</a>
+          <span class="clearfix"></span>
+        </div>
+        <!-- end .btn-box -->
+      </div>
+      <!-- end .filter-content -->
+
+      <div class="active-stories tab-content" ng-if="vm.activeStories.isActive">
+        <div class="table-data boxs has-rows-group">
+          <div class="row row-th">
+            <div class="col-td width44">Story/Activity</div>
+            <div class="col-td width10">Phase</div>
+            <div class="col-td width10 text-center">Registrants</div>
+            <div class="col-td width10 text-center">Submissions</div>
+            <div class="col-td width10 text-right">Start Date</div>
+            <div class="col-td width10 text-right">End Date</div>
+            <div class="col-td width6 text-right"></div>
+          </div>
+          <!-- end .row -->
+          <div class="row-group" ng-repeat="story in vm.activeStories.stories track by $index">
+            <div class="row-title row ng-scope story-row-formatting">
+              <div class="col-td width44 story-title-formatting">
+                <a href="#/{{$parent.user.role == 'Publisher'? 'publisherStoryDetails':'memberStoryDetails'}}/{{story.id}}" class="pull-left"><div ng-bind-html="(story.title | limitTo: 35).trim() + (story.title.length > 35 ? '...' : '')" html-title="{{story.title}}"></div></a>
+              </div>
+
+              <div class="col-td width16 ng-binding">
+                {{story.phase}}
+              </div>
+
+              <div class="col-td width40 story-add-activity-formatting">
+                <a href="#/publisherAddActivity/{{story.id}}" class="blue-border-btn width135 pull-right" ng-if="story.publisher.id == $parent.user.id && user.role == 'Publisher'" ng-hide="story.phase == 'Canceled' || story.phase == 'Completed'">ADD ACTIVITY</a>
+              </div>
+
+              <span class="clearfix"></span>
+            </div>
+            <!-- end .row-title -->
+            <div class="row row-td" ng-repeat="activity in story.activities track by $index">
+              <div class="col-td width44 activity-title-formatting"><a href="#/{{($parent.user.role == 'Publisher'?'publisherActivityDetailsAssignRegister':'memberActivityAssignAssigned')}}/{{activity.id}}" class="blue-link"><div ng-bind-html="(activity.title | limitTo: 35).trim() + (activity.title.length > 35 ? '...' : '')" html-title="{{activity.title}}"></div></a></div>
+              <div class="col-td width10 text-left">{{activity.phase}}</div>
+              <div class="col-td width10 text-center"><a href="#/{{($parent.user.role == 'Publisher'?'publisherActivityDetailsAssignRegister':'memberActivityAssignAssigned')}}/{{activity.id}}?tab=Registrants" class="blue-link">{{activity.registrationsCount}}</a></div>
+              <div class="col-td width10 text-center"><a href="#/{{($parent.user.role == 'Publisher'?'publisherActivityDetailsAssignRegister':'memberActivityAssignAssigned')}}/{{activity.id}}?tab=Submissions" class="blue-link">{{activity.submissionsCount}}</a></div>
+              <div class="col-td width10 text-right">{{ activity.milestones[1].scheduledDate | date : 'MM/dd/yyyy'}}</div>
+              <div class="col-td width10 text-right">{{ activity.milestones[activity.milestones.length-1].scheduledDate | date : 'MM/dd/yyyy'}}</div>
+              <div class="col-td width6 text-right">
+                <div ng-if="activity.phase != 'Canceled' && activity.phase != 'Review Complete' && activity.phase != 'Completed' && activity.phase != 'Accepted' && activity.phase != 'Rejected' && activity.phase != 'Awaiting Acceptance'">
+                  <a href="#/publisherEditActivity/{{activity.id}}" class="blue-link">Edit</a>
+                </div>
+              </div>
+            </div>
+            <!-- end .row -->
+          </div>
+        </div>
+        <!-- end .table-data -->
+
+        <div class="page-bar up-spacing boxs">
+          <div class="pull-left text-left">
+            <span class="text">Show</span>
+            <span class="form-container width55" ng-jqtransform="a">
+              <span class="selects-container">
+                <select ng-model="$root.$storage.publisherDashboard.pageSize"
+                        ng-change="vm.activeStories.pageSize = $root.$storage.publisherDashboard.pageSize"
+                        ng-value="$root.$storage.publisherDashboard.pageSize" convert-to-number="a">
+                  <option value="5">5</option>
+                  <option value="15">15</option>
+                  <option value="25">25</option>
+                  <option value="50000">All</option>
+                </select>
+              </span>
+            </span>
+            <span class="text">stories per page</span>
+          </div>
+          <!-- end .text-left -->
+          <div class="hide"><br dir-paginate="branch in vm.activeStories.stories | itemsPerPage: $root.$storage.publisherDashboard.pageSize" total-items="vm.activeStories.totalItems||1" current-page="vm.activeStories.page" pagination-id="active"/></div>
+          <span class="pull-right">
+            <dir-pagination-controls auto-hide="false"  pagination-id="active" on-page-change="vm.activeStories.pageChanged(newPageNumber)"> </dir-pagination-controls>
+          </span>
+          <!-- end .pages -->
+          <div class="clearfix"></div>
+        </div>
+        <!-- end .page-bar -->
+      </div>
+
+      <div class="completed-stories tab-content" ng-if="vm.completedStories.isActive">
+        <div class="table-data boxs has-rows-group">
+          <div class="row row-th">
+            <div class="col-td width44">Story/Activity</div>
+            <div class="col-td width10">Phase</div>
+            <div class="col-td width10 text-center">Registrants</div>
+            <div class="col-td width10 text-center">Submissions</div>
+            <div class="col-td width10 text-right">Start Date</div>
+            <div class="col-td width10 text-right">End Date</div>
+            <div class="col-td width6 text-right"></div>
+          </div>
+          <!-- end .row -->
+          <div class="row-group" ng-repeat="story in vm.completedStories.stories track by $index">
+            <div class="row-title row ng-scope story-row-formatting">
+              <div class="col-td width44 story-title-formatting">
+                <a href="#/{{$parent.user.role == 'Publisher'? 'publisherStoryDetails':'memberStoryDetails'}}/{{story.id}}" class="pull-left"><div ng-bind-html="(story.title | limitTo: 35).trim() + (story.title.length > 35 ? '...' : '')" html-title="{{story.title}}"></div></a>
+              </div>
+
+              <div class="col-td width16 ng-binding">
+                {{story.phase}}
+              </div>
+
+              <div class="col-td width40"></div>
+
+              <span class="clearfix"></span>
+            </div>
+            <!-- end .row-title -->
+            <div class="row row-td" ng-repeat="activity in story.activities track by $index">
+              <div class="col-td width44 activity-title-formatting"><a href="#/{{($parent.user.role == 'Publisher'?'publisherActivityDetailsCompetitionReview':'memberActivityAssignAssigned')}}/{{activity.id}}" class="blue-link"><div ng-bind-html="(activity.title | limitTo: 35).trim() + (activity.title.length > 35 ? '...' : '')" html-title="{{activity.title}}"></div></a></div>
+              <div class="col-td width10 text-left">{{activity.phase}}</div>
+              <div class="col-td width10 text-center"><a href="#/{{($parent.user.role == 'Publisher'?'publisherActivityDetailsCompetitionReview':'memberActivityAssignAssigned')}}/{{activity.id}}?tab=Registrants" class="blue-link">{{activity.registrationsCount}}</a></div>
+              <div class="col-td width10 text-center"><a href="#/{{($parent.user.role == 'Publisher'?'publisherActivityDetailsCompetitionReview':'memberActivityAssignAssigned')}}/{{activity.id}}?tab=Submissions" class="blue-link">{{activity.submissionsCount}}</a></div>
+              <div class="col-td width10 text-right">{{ activity.milestones[1].scheduledDate | date : 'MM/dd/yyyy'}}</div>
+              <div class="col-td width10 text-right">{{ activity.milestones[activity.milestones.length-1].scheduledDate | date : 'MM/dd/yyyy'}}</div>
+              <div class="col-td width6 text-right"></div>
+            </div>
+            <!-- end .row -->
+          </div>
+        </div>
+        <!-- end .table-data -->
+
+        <div class="page-bar up-spacing boxs">
+          <div class="pull-left text-left">
+            <span class="text">Show</span>
+            <span class="form-container width55" ng-jqtransform="a">
+              <span class="selects-container">
+                <select ng-model="$root.$storage.publisherDashboard.pageSizeCompleted"
+                        ng-change="vm.completedStories.pageSize = $root.$storage.publisherDashboard.pageSizeCompleted"
+                        ng-value="$root.$storage.publisherDashboard.pageSizeCompleted" convert-to-number="a">
+                  <option value="5">5</option>
+                  <option value="15">15</option>
+                  <option value="25">25</option>
+                  <option value="50000">All</option>
+                </select>
+              </span>
+            </span>
+            <span class="text">stories per page</span>
+          </div>
+          <!-- end .text-left -->
+          <div class="hide"><br dir-paginate="branch in vm.completedStories.stories | itemsPerPage: $root.$storage.publisherDashboard.pageSizeCompleted" total-items="vm.completedStories.totalItems||1" current-page="vm.completedStories.page" pagination-id="completed"/></div>
+          <span class="pull-right">
+            <dir-pagination-controls auto-hide="false" pagination-id="completed" on-page-change="vm.completedStories.pageChanged(newPageNumber)"> </dir-pagination-controls>
+          </span>
+          <!-- end .pages -->
+          <div class="clearfix"></div>
+        </div>
+        <!-- end .page-bar -->
+      </div>
+
+    </div>
+
+    <div class="gray-bg bottom-column-group">
+      <div class="container-fluid boxs">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="top-technologies-column">
+              <h2>
+                <span class="text">Community Top Skills Used</span>
+                <a href="javascript:;" class="blue-link" ng-hide="true">All Skills</a>
+              </h2>
+              <div class="module">
+
+                <div ng-show="topSkillData.isMemberSkillSnapshotPresent == true">
+                  <div class="row-th">
+                    <div class="technologies">Skills</div>
+                    <div class="members">Activities</div>
+                  </div>
+                  <div class="row-group" ng-repeat="skill in topSkillData.data">
+                    <div class="row-td">
+                      <div class="technologies">
+                        <div>{{skill.Skill_Name__c}}</div>
+                      </div>
+                      <div class="members">
+                        <span class="number text-right">
+                          <div ng-if="skill.Member_Count__c != null">{{skill.Member_Count__c}}</div>
+                          <div ng-if="skill.Member_Count__c == null">0</div>
+                        </span>
+                        <span class="slider"><span data-percentage="{{ (skill.Member_Count__c/topSkillData.maxSkillCount)*100 }}" style="width: {{ (skill.Member_Count__c/topSkillData.maxSkillCount)*100 }}%"></span></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- end .row-th -->
+                <div ng-show="topSkillData.isMemberSkillSnapshotPresent == false">
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+                  <center>
+                    <p class="gray-text font18">
+                      <span>"No Skills Present"</span>
+                    </p>
+                  </center>
+                </div>
+
+              </div>
+              <br />
+              <spanDash class="gray-text">Last modified date:
+                <span>{{topSkillData.timestamp_skills}}</span>
+              </spanDash>
+            </div>
+            <!-- end .top-technologies-column -->
+          </div>
+          <!-- end .col-md-4 -->
+          <div class="col-md-8">
+            <div class="developers-column">
+              <h2>
+                <span class="text">Members whom I have worked with</span>
+                <a href="javascript:;" class="blue-link" ng-hide="true">All My Members</a>
+              </h2>
+              <div class="module">
+                <div ng-if="publisherDeveloperData.isDeveloperPresent == true">
+                  <div class="row-group" ng-repeat="developer in publisherDeveloperData.data">
+                    <div class="col-user">
+                      <a href="#/publishermemberprofile/{{developer.Id}}" class="portrait-img"><img src="{{developer.SmallPhotoUrl}}" alt="Portrait" /></a>
+                      <span class="user-texts">
+                        <a href="#/publishermemberprofile/{{developer.Id}}" class="blue-link">
+                          <span ng-bind-html="(developer.Name | limitTo: 20).trim() + (developer.Name.length > 20 ? '...' : '')" html-title="{{developer.Name}}"></span>
+                        </a>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div ng-if="publisherDeveloperData.isDeveloperPresent == false">
+                  <div class="row row-td storys-row">
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <center>
+                      <p class="gray-text font18">
+                        <span>"No Members Present"</span>
+                      </p>
+                    </center>
+                  </div>
+                  <!-- end .row -->
+                </div>
+                <div class="clearfix"></div>
+              </div>
+            </div>
+            <!-- end .developers-column -->
+          </div>
+          <!-- end .col-md-8 -->
+        </div>
+      </div>
+    </div>
+    <!-- end .bottom-column-group -->
+  </div>
+  <!-- end .contents -->
+</apex:page>
